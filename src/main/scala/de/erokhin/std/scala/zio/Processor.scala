@@ -5,18 +5,11 @@ import zio.*
 trait Processor:
   def process: ZIO[Any, Nothing, String]
 
-object Processor:
+final class SimpleProcessor(config: Config) extends Processor:
+  def process: ZIO[Any, Nothing, String] = for
+    data: Config.Data <- config.data
+    message            = s"Purum-purum-pu: ${data.i} ----> ${data.s}"
+  yield message
 
-  class Simple(config: Config) extends Processor:
-    def process: ZIO[Any, Nothing, String] = for
-      data: Config.Data <- config.data
-      message            = s"Purum-purum-pu: ${data.i} ----> ${data.s}"
-    yield message
-
-  // ================== ACCESSORS ==================
-
-  def process: ZIO[Processor, Nothing, String] = ZIO.serviceWithZIO(_.process)
-
-  // ================== LAYERS ==================
-
-  val live: URLayer[Config, Simple] = (new Simple(_)).toLayer
+object SimpleProcessor:
+  val layer: URLayer[Config, SimpleProcessor] = (new SimpleProcessor(_)).toLayer
