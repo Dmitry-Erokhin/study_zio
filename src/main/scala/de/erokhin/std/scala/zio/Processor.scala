@@ -2,12 +2,12 @@ package de.erokhin.std.scala.zio
 
 import zio.*
 
+trait Processor:
+  def process: ZIO[Any, Nothing, String]
+
 object Processor:
 
-  trait Service:
-    def process: ZIO[Any, Nothing, String]
-
-  class Simple(config: Config.Service) extends Service:
+  class Simple(config: Config) extends Processor:
     def process: ZIO[Any, Nothing, String] = for
       data: Config.Data <- config.data
       message            = s"Purum-purum-pu: ${data.i} ----> ${data.s}"
@@ -15,8 +15,8 @@ object Processor:
 
   // ================== ACCESSORS ==================
 
-  def process: ZIO[Processor.Service, Nothing, String] = ZIO.serviceWithZIO(_.process)
+  def process: ZIO[Processor, Nothing, String] = ZIO.serviceWithZIO(_.process)
 
   // ================== LAYERS ==================
 
-  val live: URLayer[Config.Service, Simple] = (new Simple(_)).toLayer
+  val live: URLayer[Config, Simple] = (new Simple(_)).toLayer

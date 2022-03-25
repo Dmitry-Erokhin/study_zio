@@ -1,21 +1,22 @@
 package de.erokhin.std.scala.zio
 
+import de.erokhin.std.scala.zio.Config.Data
 import zio.{ ZIO, ZLayer }
+
+trait Config:
+  def data: ZIO[Any, Nothing, Data]
 
 object Config:
 
   case class Data(i: Int, s: String)
 
-  trait Service:
-    def data: ZIO[Any, Nothing, Data]
-
-  private class HardCoded extends Service:
+  private class HardCoded extends Config:
     def data: ZIO[Any, Nothing, Data] = ZIO.succeed(Data(42, "forty two"))
 
   // ================== ACCESSORS ==================
 
-  def data: ZIO[Config.Service, Nothing, Data] = ZIO.serviceWithZIO(_.data)
+  def data: ZIO[Config, Nothing, Data] = ZIO.serviceWithZIO(_.data)
 
   // ================== LAYERS ==================
 
-  val hardCoded: ZLayer[Any, Nothing, Config.Service] = ZLayer.succeed(new HardCoded)
+  val hardCoded: ZLayer[Any, Nothing, Config] = ZLayer.succeed(new HardCoded)
