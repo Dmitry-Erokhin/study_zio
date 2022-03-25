@@ -1,6 +1,6 @@
 package de.erokhin.std.scala.zio
 
-import zio.{ ZIO, ZLayer }
+import zio.*
 
 object Processor:
 
@@ -19,5 +19,4 @@ object Processor:
 
   // ================== LAYERS ==================
 
-  val live: ZLayer[Config.Service, Nothing, Service] =
-    ZLayer.fromService((config: Config.Service) => new Simple(config))
+  val live: URLayer[Config.Service, Simple] = (new Simple(_)).toLayer

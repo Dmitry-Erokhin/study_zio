@@ -8,7 +8,7 @@ import zio.*
 import zio.Clock.*
 import zio.Console.*
 
-object Application extends zio.App:
+object Application extends ZIOAppDefault:
 
   val env = Clock.live ++ Console.live ++ (Config.hardCoded >>> Processor.live)
 
@@ -19,4 +19,4 @@ object Application extends zio.App:
     _           <- printLine(msg)
   yield ()
 
-  def run(args: List[String]) = program.provide(env).exitCode
+  override def run: ZIO[Any, Any, Any] = program.provide(env).exitCode
